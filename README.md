@@ -69,4 +69,4 @@ El backend está disponible en: [https://carwash-backend-hrpl.onrender.com](http
 Sebastian Ordoñez Giraldo
 
 ## Licencia
-ISC
+LICENSE
