@@ -1,5 +1,5 @@
+
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -8,100 +8,46 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
 
-// Interfaz para los datos de los reportes
-interface ReportData {
-  dailyIncomeData: Array<{ day: string; income: number }>;
-  serviceTypeData: Array<{ name: string; value: number }>;
-  serviceTimeData: Array<{ type: string; time: number }>;
-  vehicleHistoryData: Array<{ date: string; services: number }>;
-  summaryStats: {
-    totalIncome: number;
-    dailyAverage: number;
-    bestDay: string;
-    totalServices: number;
-    avgServiceTime: number;
-  };
-}
+// Mock data for the reports
+const dailyIncomeData = [
+  { day: 'Lun', income: 2100 },
+  { day: 'Mar', income: 1800 },
+  { day: 'Mié', income: 2400 },
+  { day: 'Jue', income: 2800 },
+  { day: 'Vie', income: 3200 },
+  { day: 'Sáb', income: 3800 },
+  { day: 'Dom', income: 1500 },
+];
+
+const serviceTypeData = [
+  { name: 'Básico', value: 35 },
+  { name: 'Completo', value: 45 },
+  { name: 'Premium', value: 15 },
+  { name: 'Motor', value: 5 },
+];
+
+const serviceTimeData = [
+  { type: 'Básico', time: 25 },
+  { type: 'Completo', time: 45 },
+  { type: 'Premium', time: 65 },
+  { type: 'Motor', time: 35 },
+];
+
+const vehicleHistoryData = [
+  { date: '01/05', services: 2 },
+  { date: '03/05', services: 1 },
+  { date: '08/05', services: 3 },
+  { date: '15/05', services: 1 },
+  { date: '22/05', services: 2 },
+  { date: '28/05', services: 1 },
+];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const Reports = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [vehiclePlate, setVehiclePlate] = useState('ABC123');
-
-  // Función para obtener los reportes desde la API
-  const fetchReports = async (): Promise<ReportData> => {
-    const response = await fetch('/api/reports');
-    if (!response.ok) {
-      throw new Error('Error al obtener reportes');
-    }
-    return response.json();
-  };
-
-  // Usar React Query para manejar la obtención de datos
-  const { 
-    data: reports, 
-    isLoading, 
-    isError 
-  } = useQuery<ReportData>({
-    queryKey: ['reports'],
-    queryFn: fetchReports,
-    // Opcional: revalidar cada minuto
-    refetchInterval: 60000
-  });
-
-  // Función para renderizar un esqueleto de carga
-  const renderLoadingSkeleton = () => (
-    <div className="space-y-6">
-      <Skeleton className="h-10 w-full" />
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[...Array(4)].map((_, i) => (
-          <Skeleton key={i} className="h-24" />
-        ))}
-      </div>
-      <Skeleton className="h-[300px] w-full" />
-    </div>
-  );
-
-  // Si está cargando, muestra un esqueleto
-  if (isLoading) {
-    return (
-      <div className="space-y-6 animate-fade-in">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Reportes</h1>
-          <p className="text-muted-foreground mt-1">
-            Visualice estadísticas y datos importantes del negocio.
-          </p>
-        </div>
-        {renderLoadingSkeleton()}
-      </div>
-    );
-  }
-
-  // Si hay un error, muestra un mensaje de error
-  if (isError || !reports) {
-    return (
-      <div className="space-y-6 animate-fade-in">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Reportes</h1>
-          <p className="text-muted-foreground mt-1">
-            Error al cargar los reportes
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Destructurar los datos de los reportes
-  const { 
-    dailyIncomeData, 
-    serviceTypeData, 
-    serviceTimeData, 
-    vehicleHistoryData, 
-    summaryStats 
-  } = reports;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -169,19 +115,19 @@ const Reports = () => {
               <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div className="rounded-lg border p-3">
                   <div className="text-xs font-medium text-muted-foreground">Ingreso Total</div>
-                  <div className="mt-1 text-lg font-bold">${summaryStats.totalIncome.toFixed(2)}</div>
+                  <div className="mt-1 text-lg font-bold">$16,600</div>
                 </div>
                 <div className="rounded-lg border p-3">
                   <div className="text-xs font-medium text-muted-foreground">Promedio Diario</div>
-                  <div className="mt-1 text-lg font-bold">${summaryStats.dailyAverage.toFixed(2)}</div>
+                  <div className="mt-1 text-lg font-bold">$2,371</div>
                 </div>
                 <div className="rounded-lg border p-3">
                   <div className="text-xs font-medium text-muted-foreground">Mejor Día</div>
-                  <div className="mt-1 text-lg font-bold">{summaryStats.bestDay}</div>
+                  <div className="mt-1 text-lg font-bold">Sábado</div>
                 </div>
                 <div className="rounded-lg border p-3">
                   <div className="text-xs font-medium text-muted-foreground">Total Servicios</div>
-                  <div className="mt-1 text-lg font-bold">{summaryStats.totalServices}</div>
+                  <div className="mt-1 text-lg font-bold">158</div>
                 </div>
               </div>
             </CardContent>
@@ -270,7 +216,7 @@ const Reports = () => {
               <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div className="rounded-lg border p-3">
                   <div className="text-xs font-medium text-muted-foreground">Tiempo Promedio</div>
-                  <div className="mt-1 text-lg font-bold">{summaryStats.avgServiceTime.toFixed(1)} min</div>
+                  <div className="mt-1 text-lg font-bold">42.5 min</div>
                 </div>
                 <div className="rounded-lg border p-3">
                   <div className="text-xs font-medium text-muted-foreground">Más Rápido</div>
