@@ -5,5 +5,5 @@ services:
     buildCommand: npm install
     startCommand: npm run build && npm run preview
     envVars:
-      - key: NODE_OPTIONS
-        value: --max_old_space_size=512
+  - key: NODE_OPTIONS
+    value: --max_old_space_size=512
