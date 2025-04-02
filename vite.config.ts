@@ -8,10 +8,19 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   build: {
+    // Reducir la complejidad de la compilación
     rollupOptions: {
-      // Limitar la memoria para el empaquetado
-      maxParallelFileOps: 20
-    }
+      maxParallelFileOps: 10,
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        }
+      }
+    },
+    // Limitar el tamaño de los chunks
+    chunkSizeWarningLimit: 1000,
   },
   plugins: [react()],
   resolve: {
