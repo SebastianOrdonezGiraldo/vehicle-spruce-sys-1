@@ -1,0 +1,83 @@
+# Dependencias
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Producción
+/build
+/dist
+
+# Entorno
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directorios y archivos
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.sublime-workspace
+
+# Typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Archivos de caché
+.cache/
+.next/
+.nuxt/
+.vite/
+.eslintcache
+.stylelintcache
+
+# Husky
+.husky/_
+
+# Storybook
+/storybook-static
+
+# Cypress
+/cypress/videos/
+/cypress/screenshots/
+
+# Directorio de análisis
+/.scannerwork
+
+# Archivos locales de configuración
+config.local.js
+config.local.ts
+
+# Carpetas de pruebas E2E
+/e2e-report/
+/e2e-results/
+
+# Archivos temporales de servicio worker
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+
+# Archivos de análisis de paquetes
+stats.html
+bundle-analyzer-report.html
+
+# Archivos generados automáticamente
+/src/generated/
