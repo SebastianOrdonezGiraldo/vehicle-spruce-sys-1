@@ -1,10 +1,28 @@
 // src/components/ServiceCard.tsx
-import React from 'react';
-import { CarFront, Clock, User, Check, AlertCircle, Hourglass } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  CarFront, 
+  Clock, 
+  User, 
+  Check, 
+  AlertCircle, 
+  Hourglass, 
+  Share2 
+} from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { toast } from 'sonner';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { generateServiceRatingLink } from '@/api/serviceRatingLinkApi';
 
 export type ServiceStatus = 'pending' | 'in-progress' | 'completed' | 'delayed';
 
@@ -15,9 +33,9 @@ interface ServiceCardProps {
   clientName: string;
   serviceType: string;
   entryTime: string;
-  estimatedTime?: string; // Hacer este campo opcional
+  estimatedTime?: string; 
   assignedTo?: string;
-  status: 'pending' | 'in-progress' | 'completed' | 'delayed';
+  status: ServiceStatus;
   onMarkComplete?: (id: string) => void;
   onAssign?: (id: string) => void;
 }
@@ -35,6 +53,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   onMarkComplete,
   onAssign,
 }) => {
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [ratingLink, setRatingLink] = useState('');
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+
   // Calcular tiempo transcurrido como porcentaje
   const calculateProgress = () => {
     if (status === 'completed') return 100;
@@ -42,13 +64,12 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     
     // Para servicios en progreso o retrasados, calculamos el progreso basado en el tiempo transcurrido
     try {
-      // Convertir strings de hora a objetos Date para hoy
       const now = new Date();
       const today = new Date().setHours(0, 0, 0, 0);
       
       // Parse entry and estimated times in format "HH:MM"
       const [entryHour, entryMinute] = entryTime.split(':').map(Number);
-      const [estHour, estMinute] = estimatedTime.split(':').map(Number);
+      const [estHour, estMinute] = (estimatedTime || '00:00').split(':').map(Number);
       
       const entryDate = new Date(today);
       entryDate.setHours(entryHour, entryMinute, 0);
@@ -93,6 +114,30 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         return <Badge variant="outline" className="bg-red-100 text-red-800 hover:bg-red-100">Retrasado</Badge>;
       default:
         return null;
+    }
+  };
+
+  // Generar enlace de calificación
+  const handleGenerateRatingLink = async () => {
+    setIsGeneratingLink(true);
+    try {
+      // Convertir id a número
+      const serviceId = Number(id);
+      
+      const { ratingUrl } = await generateServiceRatingLink(serviceId);
+      
+      setRatingLink(ratingUrl || '');
+      
+      // Copiar al portapapeles
+      if (ratingUrl) {
+        await navigator.clipboard.writeText(ratingUrl);
+        toast.success('Enlace de calificación copiado al portapapeles');
+      }
+    } catch (error) {
+      console.error('Error generando enlace de calificación:', error);
+      toast.error('Error al generar enlace de calificación');
+    } finally {
+      setIsGeneratingLink(false);
     }
   };
 
@@ -154,6 +199,16 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
       </CardContent>
 
       <CardFooter className="p-4 pt-0 flex gap-2 justify-end">
+        {status === 'completed' && (
+          <Button 
+            size="sm" 
+            variant="outline"
+            onClick={() => setShareDialogOpen(true)}
+          >
+            <Share2 className="mr-2 h-4 w-4" />
+            Compartir Calificación
+          </Button>
+        )}
         {status !== 'completed' && !assignedTo && (
           <Button 
             size="sm" 
@@ -183,6 +238,31 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           </Button>
         )}
       </CardFooter>
+
+      {/* Diálogo para compartir enlace de calificación */}
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Compartir Enlace de Calificación</DialogTitle>
+            <DialogDescription>
+              Comparte este enlace con el cliente para que pueda calificar el servicio.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2">
+            <Input 
+              value={ratingLink} 
+              readOnly 
+              placeholder="Genera un enlace para compartir"
+            />
+            <Button 
+              onClick={handleGenerateRatingLink} 
+              disabled={isGeneratingLink}
+            >
+              {isGeneratingLink ? 'Generando...' : 'Generar'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

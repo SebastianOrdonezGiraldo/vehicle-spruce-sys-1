@@ -12,7 +12,7 @@ import Reports from "./pages/Reports";
 import Inventory from "./pages/Inventory";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-
+import RateService from "./pages/RateService";  // Importar nueva página
 
 // Configura QueryClient con opciones más robustas
 const queryClient = new QueryClient({
@@ -40,6 +40,7 @@ const App = () => (
             <Route path="/inventory" element={<Inventory />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/rate-service/:serviceId" element={<RateService />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
