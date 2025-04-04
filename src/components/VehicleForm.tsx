@@ -24,7 +24,7 @@ interface Customer {
 // Define el esquema del formulario usando Zod
 const formSchema = z.object({
   licensePlate: z.string().min(3, {
-    message: "La placa debe tener al menos 3 caracteres.",
+    message: "La placa debe tener al menos 6 caracteres.",
   }),
   make: z.string().min(2, {
     message: "La marca debe tener al menos 2 caracteres.",
@@ -43,7 +43,7 @@ const formSchema = z.object({
     message: "El nombre debe tener al menos 3 caracteres.",
   }),
   clientPhone: z.string().min(7, {
-    message: "El teléfono debe tener al menos 7 caracteres.",
+    message: "El teléfono debe tener al menos 10 caracteres.",
   }),
   clientEmail: z.string().email({
     message: "Correo electrónico inválido",
